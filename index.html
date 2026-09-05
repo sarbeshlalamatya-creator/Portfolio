@@ -679,18 +679,20 @@
   }
  
   .work-card-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
   .work-card-thumb {
     aspect-ratio: 16/11; background: #1f1f1f; overflow: hidden; position: relative;
   }
+  
   .work-card-thumb-inner {
-    width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    transition: transform .5s cubic-bezier(.22,1,.36,1);
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
   }
   .work-card:hover .work-card-thumb-inner { transform: scale(1.08); }
 
