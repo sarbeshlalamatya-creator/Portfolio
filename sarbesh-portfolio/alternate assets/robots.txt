@@ -1,0 +1,5 @@
+# Replace the domain below with your real domain before deploying.
+User-agent: *
+Allow: /
+
+Sitemap: https://sarbeshamatya.com.np/sitemap.xml
