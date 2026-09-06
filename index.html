@@ -25,7 +25,7 @@
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="Sarbesh Lal Amatya — UI/UX Designer in Kathmandu, Nepal"/>
-<meta name="twitter:description" content="UI/UX Designer based in Kathmandu, Nepal. 6+ years designing admission, attendance, and HR systems for higher education and software clients."/>
+<meta name="twitter:description" content="UI/UX Designer based in Kathmandu, Nepal. 6+ years experience across HR, Attendance, Admission, Lead, and Task management systems for higher education and software clients."/>
 <meta name="twitter:image" content="https://sarbeshamatya.com.np/social-share.png"/>
 
 <meta name="theme-color" content="#0e0e0e"/>
@@ -127,10 +127,15 @@
 
   ::selection { background: var(--accent); color: #000; }
 
-  html { scroll-behavior: smooth; overflow-x: hidden; max-width: 100%; }
+  html { scroll-behavior: smooth; overflow-x: hidden; max-width: 100%; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
   img, svg { max-width: 100%; }
   .about-inner > *, .exp-inner > *, .edu-inner > *, .fc-grid > *, .work-grid > * { min-width: 0; }
+
+  /* Removes the ~300ms tap delay on touch browsers for anything clickable */
+  a, button, .filter-tab, .work-card, .process-card, .exp-item, .edu-item, .about-badge {
+    touch-action: manipulation;
+  }
 
   body {
     background: var(--bg);
@@ -138,7 +143,6 @@
     font-family: var(--font-body);
     overflow-x: hidden;
     cursor: none;
-    padding-bottom: 90px;
   }
 
   /* ── CUSTOM CURSOR ── */
@@ -206,7 +210,7 @@
 
   /* ── NAV — EXPANDABLE BOTTOM BAR ── */
   #nav-shell {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
     z-index: 9997;
     /* collapsed: only the identity pill is visible */
     width: auto;
@@ -259,7 +263,7 @@
     100% { box-shadow: 0 0 0 0   rgba(34,197,94,0); }
   }
 
-  /* Hamburger icon — hidden on desktop (hover expands nav there), shown on mobile */
+  /* Hamburger icon — purely visual on desktop (click expands the pill there too), shown on mobile */
   #nav-hamburger { display: none; flex-direction: column; gap: 4px; margin-left: 10px; cursor: none; }
   #nav-hamburger span {
     width: 16px; height: 1.5px; background: #111;
@@ -495,6 +499,9 @@
   .btn-secondary:hover { border-color: var(--text); transform: translateY(-3px); }
 
   /* ── SECTION BASE ── */
+  /* scroll-margin-top keeps section headings clear of the fixed top nav pill
+     when jumping via anchor links (nav clicks, browser back/forward, etc). */
+  section, #hero { scroll-margin-top: 110px; }
   section { padding: 100px 40px; position: relative; overflow: hidden; }
   .section-label {
     font-family: var(--font-mono); font-size: .7rem; color: var(--accent);
@@ -688,32 +695,10 @@
     height: 100%;
     position: relative;
     overflow: hidden;
+    transition: transform .5s cubic-bezier(.22,1,.36,1);
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
   }
   .work-card:hover .work-card-thumb-inner { transform: scale(1.08); }
-
-  .wct1 { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
-  .wct2 { background: linear-gradient(135deg, #1a2e1a 0%, #213e16 100%); }
-  .wct3 { background: linear-gradient(135deg, #2e1a1a 0%, #3e2116 100%); }
-  .wct4 { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
-  .wct5 { background: linear-gradient(135deg, #2e2a1a 0%, #3e3616 100%); }
-  .wct6 { background: linear-gradient(135deg, #1a2e2e 0%, #163e3e 100%); }
-
-  .work-card-mockup {
-    width: 70%; background: rgba(255,255,255,.05); border-radius: 6px;
-    border: 1px solid rgba(255,255,255,.08); padding: 12px;
-    font-family: var(--font-mono); font-size: .5rem; color: rgba(255,255,255,.3);
-    line-height: 1.6;
-  }
-  .mock-bar {
-    display: flex; gap: 4px; margin-bottom: 8px;
-  }
-  .mock-dot { width: 5px; height: 5px; border-radius: 50%; }
-  .md1{background:#ff5f57} .md2{background:#febc2e} .md3{background:#28c840}
-  .mock-line {
-    height: 4px; border-radius: 2px; margin: 4px 0;
-    background: rgba(255,255,255,.08);
-  }
-  .ml-full{width:100%} .ml-80{width:80%} .ml-60{width:60%} .ml-40{width:40%}
 
   .work-card-body { padding: 20px 22px; }
   .work-card-meta {
@@ -1165,9 +1150,20 @@
     .about-inner,.exp-inner,.edu-inner{grid-template-columns:1fr;gap:40px}
     .work-grid{grid-template-columns:1fr}
     #scroll-line-wrap{display:none}
-    .fb-pm,.fb-ux,.fb-web{display:none}
+    .fb-pm,.fb-ux,.fb-web,.fb-figma,.fb-cu,.fb-vsc,.fb-px{display:none}
     .fb-ui{left:2%}
-    #nav-shell { bottom: 18px; }
+    #nav-shell { top: 18px; }
+    /* Two-column sticky headline only makes sense next to a taller list —
+       once the grid collapses to one column, let it scroll normally. */
+    .exp-headline { position: static; top: auto; }
+    /* Fixed 380px height was sized for the desktop two-column layout;
+       let it size to content when stacked above the timeline. */
+    .edu-visual { height: auto; padding: 32px 0; }
+    /* Decorative circular text sits outside the photo's bounding box —
+       harmless on wide layouts, but not worth the clutter on a phone. */
+    .about-rotating-text { display: none; }
+    .about-exp-box { flex-direction: column; text-align: center; gap: 12px; }
+    .about-exp-num { font-size: 2.6rem; }
     .filter-bar {
       max-width: 100%; overflow-x: auto; overflow-y: hidden;
       -webkit-overflow-scrolling: touch; scrollbar-width: none;
@@ -1207,7 +1203,7 @@
 <div id="cursor-dot"></div>
 <div id="cursor-ring"></div>
 
-<!-- NAV — expandable bottom pill (also serves as the mobile menu; the hamburger below 768px opens the same links as a dropdown) -->
+<!-- NAV — expandable top pill, opens on click/tap (also serves as the mobile menu; the hamburger below 768px opens the same links as a dropdown) -->
 <nav id="nav-shell" aria-label="Primary">
   <div id="nav-pill">
     <!-- Identity (always visible) -->
@@ -1428,130 +1424,21 @@
   <!-- FILTER TABS -->
   <div class="filter-bar reveal" id="filterBar">
     <div class="filter-tab-pill" id="filterPill"></div>
-    <button class="filter-tab active" data-filter="all">All Work <span class="filter-count" id="fc-all">8</span></button>
-    <button class="filter-tab" data-filter="ui-design">UI Design <span class="filter-count" id="fc-ui-design">3</span></button>
-    <button class="filter-tab" data-filter="graphic-design">Graphic Design <span class="filter-count" id="fc-graphic-design">2</span></button>
-    <button class="filter-tab" data-filter="package-design">Package Design <span class="filter-count" id="fc-package-design">1</span></button>
-    <button class="filter-tab" data-filter="ux-case-study">UX Case Study <span class="filter-count" id="fc-ux-case-study">2</span></button>
+    <button class="filter-tab active" data-filter="all">All Work <span class="filter-count" id="fc-all">0</span></button>
+    <button class="filter-tab" data-filter="ui-design">UI Design <span class="filter-count" id="fc-ui-design">0</span></button>
+    <button class="filter-tab" data-filter="graphic-design">Graphic Design <span class="filter-count" id="fc-graphic-design">0</span></button>
+    <button class="filter-tab" data-filter="package-design">Package Design <span class="filter-count" id="fc-package-design">0</span></button>
+    <button class="filter-tab" data-filter="ux-case-study">UX Case Study <span class="filter-count" id="fc-ux-case-study">0</span></button>
   </div>
 
+  <!--
+    Cards below are generated at load time by the PROJECTS array in the
+    script at the bottom of the page (search for "WORK DATA"). Add a new
+    project by adding one object to that array — the thumbnail, filter tab,
+    and counts all update automatically. This grid only ever holds the
+    empty-state placeholder in the markup itself.
+  -->
   <div class="work-grid" id="workGrid">
-    <!-- Card 1 — UI Design -->
-  <div class="work-card visible" data-category="ui-design">
-    <div class="work-card-overlay"></div>
-    <div class="work-card-thumb">
-    <div class="work-card-thumb-inner wrt1">
-      <img src="sarbesh-portfolio/assets/bagstore.png" alt="Project Preview" class="work-card-img" />
-    </div>
-    </div>
-      <div class="work-card-body">
-        <div class="work-card-meta"><span class="work-card-tag">UI Design</span><span class="work-card-year">2024</span></div>
-        <div class="work-card-title">Online Bag Store Homepage</div>
-        <div class="work-card-desc">A bold, modern e-commerce landing page designed to showcase premium bags with a striking black-and-yellow visual identity. The layout combines product-focused presentation, intuitive navigation, and a sleek macOS-style browser showcase for a polished digital shopping experience.</div>
-        <a href="https://www.figma.com/design/GZI40lqp34Gf7VP8iyEmCa/Brand-Store?node-id=0-1&t=zGloki3h7UBY7cn2-1" class="work-card-link" aria-disabled="true" rel="nofollow" title="Case study coming soon">View Case Study <span class="work-card-arrow">↗</span></a>
-      </div>
-    </div>
-    <!-- Card 2 — UX Case Study -->
-    <div class="work-card visible" data-category="ux-case-study">
-      <div class="work-card-overlay"></div>
-      <div class="work-card-thumb">
-      <div class="work-card-thumb-inner wct2">
-        <img src="sarbesh-portfolio/assets/bagstore.png" alt="Project Preview" class="work-card-img" />
-      </div>
-      </div>
-      <div class="work-card-body">
-        <div class="work-card-meta"><span class="work-card-tag">UX Case Study</span><span class="work-card-year">2024</span></div>
-        <div class="work-card-title">Test 2</div>
-        <div class="work-card-desc">End-to-end UX research and redesign — from journey mapping to high-fidelity delivery.</div>
-        <a href="#" class="work-card-link" aria-disabled="true" rel="nofollow" title="Case study coming soon">View Case Study <span class="work-card-arrow">↗</span></a>
-      </div>
-    </div>
-    <!-- Card 3 — UX Case Study -->
-    <div class="work-card visible" data-category="ux-case-study">
-      <div class="work-card-overlay"></div>
-      <div class="work-card-thumb">
-      <div class="work-card-thumb-inner wct3">
-        <img src="sarbesh-portfolio/assets/bagstore.png" alt="Project Preview" class="work-card-img" />
-      </div>
-      </div>
-      <div class="work-card-body">
-        <div class="work-card-meta"><span class="work-card-tag">UX Case Study</span><span class="work-card-year">2023</span></div>
-        <div class="work-card-title">Test 3</div>
-        <div class="work-card-desc">Full UX audit, user interviews, and redesign for a SaaS retention platform.</div>
-        <a href="#" class="work-card-link" aria-disabled="true" rel="nofollow" title="Case study coming soon">View Case Study <span class="work-card-arrow">↗</span></a>
-      </div>
-    </div>
-    <!-- Card 4 — UI Design -->
-    <div class="work-card visible" data-category="ui-design">
-      <div class="work-card-overlay"></div>
-      <div class="work-card-thumb">
-      <div class="work-card-thumb-inner wct4">
-        <img src="sarbesh-portfolio/assets/bagstore.png" alt="Project Preview" class="work-card-img" />      </div></div>
-      <div class="work-card-body">
-        <div class="work-card-meta"><span class="work-card-tag">UI Design</span><span class="work-card-year">2023</span></div>
-        <div class="work-card-title">Test 4</div>
-        <div class="work-card-desc">A high-fidelity mobile UI for a FinTech platform — dark mode, data-dense, clean.</div>
-        <a href="#" class="work-card-link" aria-disabled="true" rel="nofollow" title="Case study coming soon">View Case Study <span class="work-card-arrow">↗</span></a>
-      </div>
-    </div>
-    <!-- Card 5 — Graphic Design -->
-    <div class="work-card visible" data-category="graphic-design">
-      <div class="work-card-overlay"></div>
-      <div class="work-card-thumb">
-      <div class="work-card-thumb-inner wct5">
-        <img src="sarbesh-portfolio/assets/bagstore.png" alt="Project Preview" class="work-card-img" />      </div></div>
-      </div></div>
-      <div class="work-card-body">
-        <div class="work-card-meta"><span class="work-card-tag">Graphic Design</span><span class="work-card-year">2023</span></div>
-        <div class="work-card-title">Test 5</div>
-        <div class="work-card-desc">Comprehensive visual identity — logo, colour palette, typography, and brand guidelines.</div>
-        <a href="#" class="work-card-link" aria-disabled="true" rel="nofollow" title="Case study coming soon">View Case Study <span class="work-card-arrow">↗</span></a>
-      </div>
-    </div>
-    <!-- Card 6 — Package Design -->
-    <div class="work-card visible" data-category="package-design">
-      <div class="work-card-overlay"></div>
-      <div class="work-card-thumb">
-      <div class="work-card-thumb-inner wct6">
-        <img src="sarbesh-portfolio/assets/bagstore.png" alt="Project Preview" class="work-card-img" />      </div></div>
-      </div></div>
-      <div class="work-card-body">
-        <div class="work-card-meta"><span class="work-card-tag">Package Design</span><span class="work-card-year">2022</span></div>
-        <div class="work-card-title">Test 6</div>
-        <div class="work-card-desc">Sustainable packaging design for a Kathmandu-based herbal brand — print-ready, shelf-worthy.</div>
-        <a href="#" class="work-card-link" aria-disabled="true" rel="nofollow" title="Case study coming soon">View Case Study <span class="work-card-arrow">↗</span></a>
-      </div>
-    </div>
-    <!-- Card 7 — UI Design -->
-    <div class="work-card visible" data-category="ui-design">
-      <div class="work-card-overlay"></div>
-      <div class="work-card-thumb">
-      <div class="work-card-thumb-inner wct2">
-        <img src="sarbesh-portfolio/assets/bagstore.png" alt="Project Preview" class="work-card-img" />      </div></div>
-      </div></div>
-      <div class="work-card-body">
-        <div class="work-card-meta"><span class="work-card-tag">UI Design</span><span class="work-card-year">2022</span></div>
-        <div class="work-card-title">Test 7</div>
-        <div class="work-card-desc">Simplified onboarding flow that reduced drop-off by 38% — motion-led, component-driven.</div>
-        <a href="#" class="work-card-link" aria-disabled="true" rel="nofollow" title="Case study coming soon">View Case Study <span class="work-card-arrow">↗</span></a>
-      </div>
-    </div>
-    <!-- Card 8 — Graphic Design -->
-    <div class="work-card visible" data-category="graphic-design">
-      <div class="work-card-overlay"></div>
-      <div class="work-card-thumb">
-      <div class="work-card-thumb-inner wct3">
-        <img src="sarbesh-portfolio/assets/bagstore.png" alt="Project Preview" class="work-card-img" />      </div></div>
-      </div></div>
-      <div class="work-card-body">
-        <div class="work-card-meta"><span class="work-card-tag">Graphic Design</span><span class="work-card-year">2022</span></div>
-        <div class="work-card-title">Test 8</div>
-        <div class="work-card-desc">A series of editorial posters and social creatives for a product launch campaign.</div>
-        <a href="#" class="work-card-link" aria-disabled="true" rel="nofollow" title="Case study coming soon">View Case Study <span class="work-card-arrow">↗</span></a>
-      </div>
-    </div>
-
-    <!-- Empty state -->
     <div class="work-empty" id="workEmpty">
       <div class="work-empty-icon">🔍</div>
       <div class="work-empty-text">No projects in this category yet</div>
@@ -1674,7 +1561,7 @@
     </div>
     <div class="edu-list">
       <div class="edu-item reveal" style="transition-delay:.1s">
-        <div class="edu-degree">Master of Business Administration - MBA in Projecte Management</div>
+        <div class="edu-degree">Master of Business Administration - MBA in Project Management</div>
         <div class="edu-school">Islington College · London Metropolitan University, Kathmandu</div>
         <div class="edu-year">2023 — 2025</div>
       </div>
@@ -1804,6 +1691,133 @@
 </footer>
 
 <script>
+// ── WORK DATA ──
+// Add a new project by adding one object here. `img` should point into the
+// local "assets" folder (PNG screenshots). `category` must match one of the
+// data-filter values on the filter tabs above: ui-design, graphic-design,
+// package-design, ux-case-study.
+const PROJECTS = [
+  {
+    category: 'ui-design',
+    year: '2024',
+    title: 'Online Bag Store Homepage',
+    desc: 'A bold, modern e-commerce landing page designed to showcase premium bags with a striking black-and-yellow visual identity. The layout combines product-focused presentation, intuitive navigation, and a sleek macOS-style browser showcase for a polished digital shopping experience.',
+    img: 'assets/bagstore.png',
+    link: 'https://www.figma.com/design/GZI40lqp34Gf7VP8iyEmCa/Brand-Store?node-id=0-1&t=zGloki3h7UBY7cn2-1'
+  },
+  {
+    category: 'ux-case-study',
+    year: '2024',
+    title: 'Test 2',
+    desc: 'End-to-end UX research and redesign — from journey mapping to high-fidelity delivery.',
+    img: 'assets/test2.png',
+    link: '#'
+  },
+  {
+    category: 'ux-case-study',
+    year: '2023',
+    title: 'Test 3',
+    desc: 'Full UX audit, user interviews, and redesign for a SaaS retention platform.',
+    img: 'assets/test3.png',
+    link: '#'
+  },
+  {
+    category: 'ui-design',
+    year: '2023',
+    title: 'Test 4',
+    desc: 'A high-fidelity mobile UI for a FinTech platform — dark mode, data-dense, clean.',
+    img: 'assets/test4.png',
+    link: '#'
+  },
+  {
+    category: 'graphic-design',
+    year: '2023',
+    title: 'Test 5',
+    desc: 'Comprehensive visual identity — logo, colour palette, typography, and brand guidelines.',
+    img: 'assets/test5.png',
+    link: '#'
+  },
+  {
+    category: 'package-design',
+    year: '2022',
+    title: 'Test 6',
+    desc: 'Sustainable packaging design for a Kathmandu-based herbal brand — print-ready, shelf-worthy.',
+    img: 'assets/test6.png',
+    link: '#'
+  },
+  {
+    category: 'ui-design',
+    year: '2022',
+    title: 'Test 7',
+    desc: 'Simplified onboarding flow that reduced drop-off by 38% — motion-led, component-driven.',
+    img: 'assets/test7.png',
+    link: '#'
+  },
+  {
+    category: 'graphic-design',
+    year: '2022',
+    title: 'Test 8',
+    desc: 'A series of editorial posters and social creatives for a product launch campaign.',
+    img: 'assets/test8.png',
+    link: '#'
+  }
+];
+
+const CATEGORY_LABELS = {
+  'ui-design': 'UI Design',
+  'graphic-design': 'Graphic Design',
+  'package-design': 'Package Design',
+  'ux-case-study': 'UX Case Study'
+};
+
+function renderWorkCards() {
+  const grid = document.getElementById('workGrid');
+  const empty = document.getElementById('workEmpty');
+  if (!grid || !empty) return;
+
+  const frag = document.createDocumentFragment();
+  const counts = { all: PROJECTS.length };
+
+  PROJECTS.forEach(p => {
+    counts[p.category] = (counts[p.category] || 0) + 1;
+
+    const card = document.createElement('div');
+    card.className = 'work-card visible';
+    card.dataset.category = p.category;
+
+    const isPlaceholder = !p.link || p.link === '#';
+    const linkAttrs = isPlaceholder
+      ? 'aria-disabled="true" rel="nofollow" title="Case study coming soon"'
+      : 'target="_blank" rel="noopener"';
+
+    card.innerHTML = `
+      <div class="work-card-overlay"></div>
+      <div class="work-card-thumb">
+        <div class="work-card-thumb-inner">
+          <img src="${p.img}" alt="${p.title} — project preview" class="work-card-img" loading="lazy"
+               onerror="this.closest('.work-card-thumb-inner').style.background='linear-gradient(135deg,#1a1a2e 0%,#16213e 100%)'; this.remove();">
+        </div>
+      </div>
+      <div class="work-card-body">
+        <div class="work-card-meta"><span class="work-card-tag">${CATEGORY_LABELS[p.category] || p.category}</span><span class="work-card-year">${p.year}</span></div>
+        <div class="work-card-title">${p.title}</div>
+        <div class="work-card-desc">${p.desc}</div>
+        <a href="${p.link}" class="work-card-link" ${linkAttrs}>View Case Study <span class="work-card-arrow">↗</span></a>
+      </div>
+    `;
+    frag.appendChild(card);
+  });
+
+  grid.insertBefore(frag, empty);
+
+  // Sync the filter-tab counts to the actual data
+  Object.keys(counts).forEach(key => {
+    const el = document.getElementById('fc-' + key);
+    if (el) el.textContent = counts[key];
+  });
+}
+renderWorkCards();
+
 // ── TOASTS (success / error / info messages) ──
 function showToast(message, type = 'info', duration = 3200) {
   const container = document.getElementById('toast-container');
@@ -1826,11 +1840,12 @@ function showToast(message, type = 'info', duration = 3200) {
 }
 
 // ── PLACEHOLDER LINKS (not yet connected) — give feedback instead of a dead jump ──
-document.querySelectorAll('a[href="#"]').forEach(a => {
-  a.addEventListener('click', e => {
-    e.preventDefault();
-    showToast("This link isn't connected yet — check back soon!", 'error');
-  });
+// Delegated so it also covers the work-card links generated above.
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href="#"]');
+  if (!a) return;
+  e.preventDefault();
+  showToast("This link isn't connected yet — check back soon!", 'error');
 });
 
 // ── COPY TO CLIPBOARD (email / phone) ──
@@ -1863,9 +1878,15 @@ function animCursor() {
   requestAnimationFrame(animCursor);
 }
 animCursor();
-document.querySelectorAll('a,button,.process-card,.work-card,.exp-item,.skill-tag,.social-link,.about-badge,.filter-tab,#nav-pill').forEach(el => {
-  el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
-  el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+document.body.addEventListener('mouseover', e => {
+  if (e.target.closest('a,button,.process-card,.work-card,.exp-item,.skill-tag,.social-link,.about-badge,.filter-tab,#nav-pill')) {
+    document.body.classList.add('cursor-hover');
+  }
+});
+document.body.addEventListener('mouseout', e => {
+  if (e.target.closest('a,button,.process-card,.work-card,.exp-item,.skill-tag,.social-link,.about-badge,.filter-tab,#nav-pill')) {
+    document.body.classList.remove('cursor-hover');
+  }
 });
 
 // ── PROGRESS BAR ──
@@ -1882,6 +1903,7 @@ window.addEventListener('scroll', () => {
   if (!wrap) return;
   const rows = Math.ceil(window.innerHeight / 1000) + 2;
   const cols = Math.ceil(window.innerWidth / 400) + 1;
+  const frag = document.createDocumentFragment();
   for (let r = 0; r < rows; r++) {
     const row = document.createElement('div');
     row.className = 'grid-watermark-row';
@@ -1891,8 +1913,9 @@ window.addEventListener('scroll', () => {
       w.textContent = 'MIRAKURUH';
       row.appendChild(w);
     }
-    wrap.appendChild(row);
+    frag.appendChild(row);
   }
+  wrap.appendChild(frag);
 })();
 
 // ── COUNTERS ──
@@ -1953,18 +1976,20 @@ revealEls.forEach(el => revealObs.observe(el));
 const items = ['PRODUCT DESIGN','UX RESEARCH','UI DEVELOPMENT','DESIGN SYSTEMS','MOTION DESIGN','BRAND IDENTITY','USER TESTING','PROTOTYPING'];
 const track = document.getElementById('marqueeTrack');
 const doubled = [...items,...items,...items,...items];
+const marqueeFrag = document.createDocumentFragment();
 doubled.forEach((text,i) => {
   const el = document.createElement('span');
   el.className = 'marquee-item';
   el.textContent = text;
-  track.appendChild(el);
+  marqueeFrag.appendChild(el);
   if (i < doubled.length - 1) {
-    const dot = document.createElement('span');
-    dot.className = 'marquee-item marquee-dot';
-    dot.textContent = '·';
-    track.appendChild(dot);
+    const dotEl = document.createElement('span');
+    dotEl.className = 'marquee-item marquee-dot';
+    dotEl.textContent = '·';
+    marqueeFrag.appendChild(dotEl);
   }
 });
+track.appendChild(marqueeFrag);
 
 // ── MAGNETIC BUTTONS ──
 document.querySelectorAll('.btn-primary,.btn-secondary,.nav-cta,.social-link').forEach(btn => {
@@ -1993,16 +2018,8 @@ window.addEventListener('scroll', () => {
 // ── FILTER TABS ──
 (function() {
   const tabs   = document.querySelectorAll('.filter-tab');
-  const cards  = document.querySelectorAll('.work-card[data-category]');
   const pill   = document.getElementById('filterPill');
   const empty  = document.getElementById('workEmpty');
-
-  // Count per category
-  const counts = { all: cards.length };
-  cards.forEach(c => {
-    const cat = c.dataset.category;
-    counts[cat] = (counts[cat] || 0) + 1;
-  });
 
   // Move pill to active tab
   function movePill(tab) {
@@ -2010,10 +2027,11 @@ window.addEventListener('scroll', () => {
     pill.style.transform = `translateX(${tab.offsetLeft}px)`;
   }
 
-  // Filter cards
+  // Filter cards (re-queries live, so it always matches whatever is on the page)
   function filterCards(activeFilter) {
+    const cards = document.querySelectorAll('.work-card[data-category]');
     let visible = 0;
-    cards.forEach((card, i) => {
+    cards.forEach((card) => {
       const match = activeFilter === 'all' || card.dataset.category === activeFilter;
       if (match) {
         card.classList.remove('hidden', 'hiding');
@@ -2027,11 +2045,7 @@ window.addEventListener('scroll', () => {
       }
     });
     // empty state
-    if (visible === 0) {
-      empty.classList.add('visible');
-    } else {
-      empty.classList.remove('visible');
-    }
+    empty.classList.toggle('visible', visible === 0);
   }
 
   // Init pill on first active tab
@@ -2056,46 +2070,46 @@ window.addEventListener('scroll', () => {
 })();
 
 // ── EXPANDABLE NAV ──
+// Click (or tap) to open/close instead of hover — same expand animation,
+// but it stays open until you click the identity again, pick a link, click
+// elsewhere on the page, or press Escape.
 (function() {
   const shell = document.getElementById('nav-shell');
   const pill  = document.getElementById('nav-pill');
   const identity = document.getElementById('nav-identity');
   const links = document.querySelectorAll('#nav-links-inner a');
-  let expandTimer, collapseTimer;
 
   function syncAria() {
     identity.setAttribute('aria-expanded', shell.classList.contains('expanded') ? 'true' : 'false');
   }
-  function expand() {
-    clearTimeout(collapseTimer);
+  function open() {
     shell.classList.add('expanded');
     syncAria();
   }
-  function collapse() {
-    collapseTimer = setTimeout(() => { shell.classList.remove('expanded'); syncAria(); }, 260);
+  function close() {
+    shell.classList.remove('expanded');
+    syncAria();
   }
-
-  // Hover behaviour
-  pill.addEventListener('mouseenter', expand);
-  shell.addEventListener('mouseleave', collapse);
-
-  // Click identity to toggle (touch support)
-  identity.addEventListener('click', () => {
+  function toggle() {
     shell.classList.toggle('expanded');
     syncAria();
-  });
+  }
 
-  // Keyboard support (Enter / Space toggles the menu)
+  // Click identity to open/close (works the same on desktop and touch)
+  identity.addEventListener('click', () => toggle());
+
+  // Keyboard support (Enter / Space toggles the menu, Escape closes it)
   identity.addEventListener('keydown', e => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      shell.classList.toggle('expanded');
-      syncAria();
+      toggle();
     }
-    if (e.key === 'Escape') {
-      shell.classList.remove('expanded');
-      syncAria();
-    }
+    if (e.key === 'Escape') close();
+  });
+
+  // Click anywhere outside the nav closes it
+  document.addEventListener('click', e => {
+    if (shell.classList.contains('expanded') && !shell.contains(e.target)) close();
   });
 
   // Smooth scroll + close on link click
@@ -2104,7 +2118,7 @@ window.addEventListener('scroll', () => {
       e.preventDefault();
       const target = document.querySelector(a.getAttribute('href'));
       if (target) target.scrollIntoView({ behavior: 'smooth' });
-      setTimeout(collapse, 600);
+      close();
     });
   });
 
