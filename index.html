@@ -1005,6 +1005,18 @@
     letter-spacing: .12em; text-transform: uppercase;
   }
 
+  /* ── LOAD MORE (project pagination) ── */
+  .work-loadmore-wrap {
+    display: flex; justify-content: center; margin-top: 48px;
+  }
+  .work-loadmore-wrap.hidden-control { display: none; }
+  .work-loadmore-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .work-loadmore-count {
+    font-family: var(--font-mono); color: var(--accent); letter-spacing: 0;
+  }
+
   /* ── MARQUEE ── */
   .marquee-section {
     padding: 0; overflow: hidden;
@@ -1444,6 +1456,15 @@
       <div class="work-empty-text">No projects in this category yet</div>
     </div>
   </div>
+
+  <!-- Pagination control — shows 9 cards at a time (per the current filter),
+       revealing 6 more on each click. Hidden automatically once every
+       matching card is already on screen. -->
+  <div class="work-loadmore-wrap" id="workLoadMoreWrap">
+    <button class="btn-secondary work-loadmore-btn" id="workLoadMoreBtn" type="button">
+      See More <span class="work-loadmore-count" id="workLoadMoreCount"></span>
+    </button>
+  </div>
 </section>
 
 <!-- EXPERIENCE -->
@@ -1702,7 +1723,7 @@ const PROJECTS = [
     year: '2024',
     title: 'Online Bag Store Homepage',
     desc: 'A bold, modern e-commerce landing page designed to showcase premium bags with a striking black-and-yellow visual identity. The layout combines product-focused presentation, intuitive navigation, and a sleek macOS-style browser showcase for a polished digital shopping experience.',
-    img: 'sarbesh-portfolio/assets/bagstore.png',
+    img: 'assets/bagstore.png',
     link: 'https://www.figma.com/design/GZI40lqp34Gf7VP8iyEmCa/Brand-Store?node-id=0-1&t=zGloki3h7UBY7cn2-1'
   },
   {
@@ -1782,7 +1803,7 @@ function renderWorkCards() {
     counts[p.category] = (counts[p.category] || 0) + 1;
 
     const card = document.createElement('div');
-    card.className = 'work-card visible';
+    card.className = 'work-card';
     card.dataset.category = p.category;
 
     const isPlaceholder = !p.link || p.link === '#';
@@ -1817,6 +1838,7 @@ function renderWorkCards() {
   });
 }
 renderWorkCards();
+initWorkPagination();
 
 // ── TOASTS (success / error / info messages) ──
 function showToast(message, type = 'info', duration = 3200) {
@@ -2015,51 +2037,90 @@ window.addEventListener('scroll', () => {
   if (sc) sc.style.transform = `translateY(${y * .03}px)`;
 }, { passive: true });
 
-// ── FILTER TABS ──
-(function() {
-  const tabs   = document.querySelectorAll('.filter-tab');
-  const pill   = document.getElementById('filterPill');
-  const empty  = document.getElementById('workEmpty');
+// ── FILTER TABS + "SEE MORE" PAGINATION ──
+// Shows PAGE_SIZE cards at a time for whichever filter is active; each click
+// of "See More" reveals LOAD_STEP additional matching cards. Switching
+// filters resets back to PAGE_SIZE. initWorkPagination() is called once,
+// right after renderWorkCards() builds the cards.
+function initWorkPagination() {
+  const PAGE_SIZE = 9;
+  const LOAD_STEP = 6;
 
-  // Move pill to active tab
+  const tabs       = document.querySelectorAll('.filter-tab');
+  const pill       = document.getElementById('filterPill');
+  const empty      = document.getElementById('workEmpty');
+  const loadWrap   = document.getElementById('workLoadMoreWrap');
+  const loadBtn    = document.getElementById('workLoadMoreBtn');
+  const loadCount  = document.getElementById('workLoadMoreCount');
+  if (!tabs.length || !pill || !empty || !loadWrap || !loadBtn) return;
+
+  let currentFilter = 'all';
+  let visibleCount = PAGE_SIZE;
+
+  // Every card starts hidden so the first page-load reveal uses the same
+  // staggered entrance animation as a filter switch, instead of briefly
+  // showing every card before the excess ones animate back out.
+  document.querySelectorAll('.work-card[data-category]').forEach(c => c.classList.add('hidden'));
+
   function movePill(tab) {
     pill.style.width  = tab.offsetWidth + 'px';
     pill.style.transform = `translateX(${tab.offsetLeft}px)`;
   }
 
-  // Filter cards (re-queries live, so it always matches whatever is on the page)
-  function filterCards(activeFilter) {
-    const cards = document.querySelectorAll('.work-card[data-category]');
-    let visible = 0;
-    cards.forEach((card) => {
-      const match = activeFilter === 'all' || card.dataset.category === activeFilter;
-      if (match) {
+  // Re-queries live so it always matches whatever cards exist on the page.
+  function update() {
+    const cards = Array.from(document.querySelectorAll('.work-card[data-category]'));
+    const matches = cards.filter(c => currentFilter === 'all' || c.dataset.category === currentFilter);
+    const shouldShow = new Set(matches.slice(0, visibleCount));
+
+    let shownIndex = 0;
+    cards.forEach(card => {
+      if (shouldShow.has(card)) {
+        const wasOffscreen = card.classList.contains('hidden') || card.classList.contains('hiding');
         card.classList.remove('hidden', 'hiding');
-        card.style.animationDelay = (visible * 60) + 'ms';
-        card.classList.add('showing');
-        setTimeout(() => card.classList.remove('showing'), 500);
-        visible++;
-      } else {
+        if (wasOffscreen) {
+          card.style.animationDelay = (shownIndex * 60) + 'ms';
+          card.classList.add('showing');
+          setTimeout(() => card.classList.remove('showing'), 500);
+        }
+        shownIndex++;
+      } else if (!card.classList.contains('hidden')) {
         card.classList.add('hiding');
         setTimeout(() => { card.classList.add('hidden'); card.classList.remove('hiding'); }, 380);
+      } else {
+        card.classList.add('hidden');
       }
     });
-    // empty state
-    empty.classList.toggle('visible', visible === 0);
+
+    empty.classList.toggle('visible', matches.length === 0);
+
+    const remaining = matches.length - shouldShow.size;
+    loadWrap.classList.toggle('hidden-control', remaining <= 0);
+    if (remaining > 0) {
+      loadCount.textContent = `(+${Math.min(LOAD_STEP, remaining)})`;
+    }
   }
 
   // Init pill on first active tab
   const firstActive = document.querySelector('.filter-tab.active');
   if (firstActive) requestAnimationFrame(() => movePill(firstActive));
 
-  // Tab click
+  // Tab click — switching filters resets pagination back to the first page
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
       tabs.forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       movePill(tab);
-      filterCards(tab.dataset.filter);
+      currentFilter = tab.dataset.filter;
+      visibleCount = PAGE_SIZE;
+      update();
     });
+  });
+
+  // See More — reveal the next batch within the current filter
+  loadBtn.addEventListener('click', () => {
+    visibleCount += LOAD_STEP;
+    update();
   });
 
   // Resize: reposition pill
@@ -2067,7 +2128,9 @@ window.addEventListener('scroll', () => {
     const active = document.querySelector('.filter-tab.active');
     if (active) movePill(active);
   });
-})();
+
+  update();
+}
 
 // ── EXPANDABLE NAV ──
 // Click (or tap) to open/close instead of hover — same expand animation,
