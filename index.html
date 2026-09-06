@@ -605,22 +605,6 @@
     letter-spacing: .1em;
     z-index: 2;
   }
-  .about-rotating-text {
-    position: absolute;
-    top: 7%;
-    left: 100%;
-    transform: translate(-50%, -50%);
-    width: 280px;  /* Slightly larger than 400px so it wraps around nicely */
-    height: 280px;
-    z-index: -1;   /* Keeps text behind the image overlay and tag */
-    pointer-events: none;
-  }
-  .about-rotating-text svg { 
-    width: 100%;
-    height: 100%;
-    animation: rotateText 25s linear infinite; }
-  @keyframes rotateText { from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); } }
 
   .about-content {}
   .about-hello {
@@ -741,7 +725,7 @@
     display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start;
   }
   .exp-headline {
-    font-family: var(--font-display); font-size: clamp(32px, 5vw, 66px);
+    font-family: var(--font-display); font-size: clamp(40px, 6.5vw, 120px);
     color: var(--white); line-height: 1.05; position: sticky; top: 120px;
   }
   .exp-headline em { color: var(--accent); font-style: normal; -webkit-text-stroke: 0; }
@@ -1171,9 +1155,6 @@
     /* Fixed 380px height was sized for the desktop two-column layout;
        let it size to content when stacked above the timeline. */
     .edu-visual { height: auto; padding: 32px 0; }
-    /* Decorative circular text sits outside the photo's bounding box —
-       harmless on wide layouts, but not worth the clutter on a phone. */
-    .about-rotating-text { display: none; }
     .about-exp-box { flex-direction: column; text-align: center; gap: 12px; }
     .about-exp-num { font-size: 2.6rem; }
     .filter-bar {
@@ -1182,12 +1163,23 @@
     }
     .filter-bar::-webkit-scrollbar { display: none; }
     .filter-tab { padding: 12px 18px; }
-    #nav-hamburger { display: flex; }
-    #nav-pill { width: 210px !important; overflow: visible; position: relative; }
-    #nav-shell.expanded #nav-pill { width: 210px !important; border-radius: 20px; }
-    #nav-identity { border-right: none; width: 100%; justify-content: space-between; }
+    #nav-hamburger { display: flex; flex-shrink: 0; }
+    /* The old fixed 210px was narrower than the desktop pill (260px) while
+       ALSO adding the hamburger icon on top — guaranteed overflow, which is
+       why the hamburger looked stuck to the edge with no gap. Sizing to
+       content instead means it always fits whatever's inside it, with a
+       94vw safety cap for very narrow phones. */
+    #nav-pill {
+      width: max-content !important; max-width: 94vw !important;
+      overflow: visible; position: relative;
+    }
+    #nav-shell.expanded #nav-pill {
+      width: max-content !important; max-width: 94vw !important;
+      border-radius: 20px;
+    }
+    #nav-identity { border-right: none; width: 100%; justify-content: space-between; gap: 14px; }
     #nav-links-inner {
-      position: absolute; top: calc(100% + 12px); left: 0; width: 210px;
+      position: absolute; top: calc(100% + 12px); left: 0; width: 100%; min-width: 220px;
       flex-direction: column; align-items: stretch; gap: 0; padding: 6px 0;
       background: #fff; border-radius: 16px; overflow: hidden;
       box-shadow: 0 16px 50px rgba(0,0,0,.45), 0 4px 14px rgba(0,0,0,.25);
@@ -1374,18 +1366,6 @@
       </div>
       <div class="about-photo-overlay"></div>
       <div class="about-photo-tag">Kathmandu, NP</div>
-      <div class="about-rotating-text">
-        <svg viewBox="0 0 400 400" width="400" height="400">
-          <defs>
-            <path id="circle-path" d="M 200, 200 m -170, 0 a 170,170 0 1,1 340,0 a 170,170 0 1,1 -340,0"/>
-          </defs>
-          <text fill="#c8f135" font-family="Space Mono" font-size="16px" letter-spacing="3">
-            <textPath href="#circle-path">
-              Seamless | Solution-Driven | Self-Evolving | Synergistic | Seamless | Solution-Driven | Self-Evolving | Synergistic | 
-            </textPath>
-          </text>
-        </svg>
-      </div>
     </div>
 
     <div class="about-content reveal-right">
@@ -1791,7 +1771,7 @@ const PROJECTS = [
     link: '#'
   },
   {
-    category: 'graphic-design',
+    category: 'ux-design',
     year: '2022',
     title: 'Test 10',
     desc: 'A series of editorial posters and social creatives for a product launch campaign.',
